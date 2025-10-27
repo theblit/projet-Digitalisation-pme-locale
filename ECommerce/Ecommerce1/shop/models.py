@@ -11,6 +11,9 @@ class Category(models.Model):
     class Meta:
         ordering = ['-date_added']
 
+    def __str__(self):
+        return self.name
+
 
 
 # pour creer la table produit et une relation entre les produits et les categories

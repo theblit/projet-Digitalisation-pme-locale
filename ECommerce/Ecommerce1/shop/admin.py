@@ -2,6 +2,15 @@ from django.contrib import admin
 from .models import Category,Product
 
 # Register your models here.
+class AdminCategory(admin.ModelAdmin):
+    list_display = ('name','date_added')
+    search_fields = ('name',)
 
-admin.site.register(Category)
-admin.site.register(Product)
+
+class AdminProduct(admin.ModelAdmin):
+    list_display = ('title','price','category','date_added')
+    search_fields = ('title','category__name')
+
+
+admin.site.register(Category, AdminCategory)
+admin.site.register(Product, AdminProduct)
