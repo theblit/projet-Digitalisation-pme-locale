@@ -1,0 +1,154 @@
+{% extends "shop/base.html"%}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Votre Panier</h2>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list-group" id="item-list">
+                <!-- Les articles du panier seront insérés ici par JavaScript -->
+            </ul>
+            
+            <div class="mt-3" id="cart-summary" style="display: none;">
+                <h4>Total articles: <span id="total-items">0</span></h4>
+                <h3 class="text-success">Total: <span id="total-price">0</span> XOF</h3>
+            </div>            
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h3>Informations de livraison</h3>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <!-- Champs cachés pour envoyer le panier et le total -->
+                <input type="hidden" name="items" id="items-hidden">
+                <input type="hidden" name="total" id="total-hidden">
+                
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="nom">Nom complet</label>
+                        <input type="text" class="form-control" name="nom" id="nom" placeholder="Votre nom" required>
+                    </div>
+                    
+                    <div class="form-group col-md-6">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" name="email" id="email" placeholder="exemple@gmail.com" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="adress">Adresse</label>
+                    <input type="text" class="form-control" name="adress" id="adress" placeholder="Adresse complète" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="ville">Ville</label>
+                        <input type="text" name="ville" id="ville" class="form-control" required>
+                    </div>
+                    
+                    <div class="form-group col-md-4">
+                        <label for="pays">Pays</label>
+                        <select name="pays" id="pays" class="form-control" required>
+                            <option value="Cote D'ivoire">Côte D'Ivoire</option>
+                            <option value="Cameroun">Cameroun</option>
+                            <option value="Nigeria">Nigeria</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group col-md-2">
+                        <label for="zipcode">Code postal</label>
+                        <input name="zipcode" id="zipcode" type="text" class="form-control">
+                    </div>
+
+                    <div class="form-group col-md-12">
+                      <label for="total-display">Somme totale à payer</label>
+                      <input name="total-display" id="total-display" type="text" class="form-control form-control-lg bg-light" readonly>
+                    </div>
+
+                </div>
+                
+                <button type="submit" class="btn btn-success btn-lg btn-block">Commander</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+
+<script type="text/javascript">
+    if (localStorage.getItem('panier') == null){
+        var panier = {};
+    } else {
+        panier = JSON.parse(localStorage.getItem('panier'));
+    }
+    
+    console.log("Panier chargé:", panier);
+    
+    var totalItems = 0;
+    var totalPrice = 0;
+    var panierCount = Object.keys(panier).length;
+    
+    if (panierCount > 0) {
+        $('#cart-summary').show();
+        
+        for (item in panier){
+            let quantite = panier[item][0];      // quantité
+            let nom = panier[item][1];           // nom
+            let prixTotal = panier[item][2];     // prix total
+            let prixUnitaire = panier[item][3];  // prix unitaire
+            
+            totalItems += quantite;
+            totalPrice += prixTotal;
+            
+            console.log("Article:", nom, "| Qté:", quantite, "| Prix unitaire:", prixUnitaire, "| Prix total:", prixTotal);
+            
+            let itemString = `
+                <li class="list-group-item">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="font-weight-bold">${nom}</span>
+                        <span class="badge bg-primary rounded-pill">${quantite}</span>
+                    </div>
+                    <div class="text-muted small mt-1">
+                        ${prixUnitaire.toLocaleString()} XOF × ${quantite} = ${prixTotal.toLocaleString()} XOF
+                    </div>
+                </li>
+            `;
+            
+            $('#item-list').append(itemString);
+        }
+        
+        $('#total-items').text(totalItems);
+        $('#total-price').text(totalPrice.toLocaleString());
+        
+        // AJOUT ICI : Remplir le champ "Somme totale à payer"
+        $('#total-display').val(totalPrice.toLocaleString() + ' XOF');
+        
+    } else {
+        $('#item-list').append('<li class="list-group-item alert alert-warning">Votre panier est vide. <a href="/">Retour à l\'accueil</a></li>');
+        $('#total-display').val('0 XOF');
+    }
+    
+    // Avant de soumettre le formulaire, ajouter les données du panier
+    $('form').submit(function(e) {
+        if (panierCount === 0) {
+            e.preventDefault();
+            alert("Votre panier est vide !");
+            return false;
+        }
+        
+        $('#items-hidden').val(JSON.stringify(panier));
+        $('#total-hidden').val(totalPrice);
+        console.log("Données envoyées - Panier:", JSON.stringify(panier), "| Total:", totalPrice);
+    });
+</script>
+
+
+{% endblock %}
