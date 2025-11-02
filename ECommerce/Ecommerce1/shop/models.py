@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Create your models here.
 
@@ -13,6 +14,25 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+    
+
+
+# pour creer la table profil vendeur
+
+class ProfilVendeur(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profil_vendeur')
+    nom_boutique = models.CharField(max_length=200)
+    description = models.TextField(blank=True)
+    telephone = models.CharField(max_length=20)
+    adresse = models.CharField(max_length=300, blank=True)
+    ville = models.CharField(max_length=100, blank=True)
+    logo = models.CharField(max_length=500, blank=True)  # URL du logo 
+    est_verifie = models.BooleanField(default=False)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"{self.nom_boutique} - {self.user.username}"
+
 
 
 # pour creer la table produit et une relation entre les produits et les categories
@@ -23,6 +43,15 @@ class Product(models.Model):
     category = models.ForeignKey(Category, related_name='categorie', on_delete=models.CASCADE)
     image = models.CharField(max_length=500)
     date_added = models.DateTimeField(auto_now_add=True)
+    
+    #pour relier le produit au vendeur
+    vendeur = models.ForeignKey(ProfilVendeur, on_delete=models.CASCADE, related_name='produits', null=True, blank=True)
+    statut = models.CharField(max_length=20, choices=[
+        ('en_attente', 'En attente de validation'),
+        ('approuve', 'Approuvé'),
+        ('refuse', 'Refusé'),
+    ], default='en_attente')
+    stock = models.IntegerField(default=1)
     
     class Meta:
         ordering = ['-date_added']
@@ -99,3 +128,9 @@ class CodePromo(models.Model):
             self.date_debut <= now <= self.date_fin and
             self.utilisations_actuelles < self.utilisations_max
         ) 
+    
+
+
+
+
+

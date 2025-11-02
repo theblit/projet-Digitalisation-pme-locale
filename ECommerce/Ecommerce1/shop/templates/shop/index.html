@@ -68,7 +68,11 @@
 
 {% block js %}
 
+
+
 <script type="text/javascript">
+    // Script pour gérer le panier avec localStorage et Bootstrap Popover
+
     console.log("juste pour le teste js"); 
     
     if (localStorage.getItem('panier') == null) {
@@ -211,5 +215,19 @@ $(document).on('click', '.ted', function(){
 
 
 </script>
+
+<script>
+  // Initialiser le popover pour "Ajouter des Produits"
+  document.addEventListener('DOMContentLoaded', function() {
+    var ajouterProduitBtn = document.getElementById('ajouter-produit-btn');
+    if (ajouterProduitBtn) {
+      new bootstrap.Popover(ajouterProduitBtn, {
+        sanitize: false
+      });
+    }
+  });
+  
+</script>
+
 
 {% endblock %}

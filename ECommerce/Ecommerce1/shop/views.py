@@ -1,9 +1,15 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .models import Product, Commande, CodePromo
+from .models import Product, Commande, CodePromo, ProfilVendeur
 from django.core.paginator import Paginator
 from django.utils import timezone
-import json
+import json; from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import AuthenticationForm
+from .forms import InscriptionForm, ProfilVendeurForm, ProductForm
+
+
+
 
 def index(request):
     product_objects = Product.objects.all()
@@ -144,3 +150,149 @@ def confirmation(request, commande_id):
         return redirect('home')
     
     return render(request, 'shop/confirmation.html', {'commande': commande})
+
+
+
+
+
+
+
+# Vue d'inscription
+def inscription(request):
+    if request.method == 'POST':
+        form = InscriptionForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, f'Bienvenue {user.username} ! Votre compte vendeur a été créé.')
+            return redirect('mon_profil')
+    else:
+        form = InscriptionForm()
+    
+    return render(request, 'shop/inscription.html', {'form': form})
+
+
+# Vue de connexion
+def connexion(request):
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.success(request, f'Bon retour {username} !')
+                return redirect('home')
+            else:
+                messages.error(request, 'Nom d\'utilisateur ou mot de passe incorrect.')
+        else:
+            messages.error(request, 'Nom d\'utilisateur ou mot de passe incorrect.')
+    else:
+        form = AuthenticationForm()
+    
+    return render(request, 'shop/connexion.html', {'form': form})
+
+
+# Vue de déconnexion
+def deconnexion(request):
+    logout(request)
+    messages.success(request, 'Vous avez été déconnecté.')
+    return redirect('home')
+
+
+# Profil vendeur
+@login_required
+def mon_profil(request):
+    try:
+        profil = request.user.profil_vendeur
+    except ProfilVendeur.DoesNotExist:
+        # Créer un profil si n'existe pas
+        profil = ProfilVendeur.objects.create(
+            user=request.user,
+            nom_boutique=f"Boutique de {request.user.username}",
+            telephone=""
+        )
+    
+    if request.method == 'POST':
+        form = ProfilVendeurForm(request.POST, instance=profil)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profil mis à jour avec succès !')
+            return redirect('mon_profil')
+    else:
+        form = ProfilVendeurForm(instance=profil)
+    
+    mes_produits = Product.objects.filter(vendeur=profil).order_by('-date_added')
+    
+    context = {
+        'profil': profil,
+        'form': form,
+        'mes_produits': mes_produits
+    }
+    
+    return render(request, 'shop/mon_profil.html', context)
+
+
+# Ajouter un produit
+@login_required
+def ajouter_produit(request):
+    try:
+        profil = request.user.profil_vendeur
+    except ProfilVendeur.DoesNotExist:
+        messages.error(request, 'Vous devez d\'abord compléter votre profil vendeur.')
+        return redirect('mon_profil')
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST)
+        if form.is_valid():
+            produit = form.save(commit=False)
+            produit.vendeur = profil
+            produit.statut = 'en_attente'  # En attente de validation
+            produit.save()
+            messages.success(request, 'Produit ajouté avec succès ! Il sera visible après validation.')
+            return redirect('mon_profil')
+    else:
+        form = ProductForm()
+    
+    return render(request, 'shop/ajouter_produit.html', {'form': form})
+
+
+# Modifier un produit
+@login_required
+def modifier_produit(request, produit_id):
+    produit = Product.objects.get(id=produit_id)
+    
+    # Vérifier que c'est bien le vendeur du produit
+    if produit.vendeur.user != request.user:
+        messages.error(request, 'Vous n\'avez pas la permission de modifier ce produit.')
+        return redirect('mon_profil')
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, instance=produit)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Produit modifié avec succès !')
+            return redirect('mon_profil')
+    else:
+        form = ProductForm(instance=produit)
+    
+    return render(request, 'shop/modifier_produit.html', {'form': form, 'produit': produit})
+
+
+# Supprimer un produit
+@login_required
+def supprimer_produit(request, produit_id):
+    produit = Product.objects.get(id=produit_id)
+    
+    # Vérifier que c'est bien le vendeur du produit
+    if produit.vendeur.user != request.user:
+        messages.error(request, 'Vous n\'avez pas la permission de supprimer ce produit.')
+        return redirect('mon_profil')
+    
+    if request.method == 'POST':
+        produit.delete()
+        messages.success(request, 'Produit supprimé avec succès !')
+        return redirect('mon_profil')
+    
+    return render(request, 'shop/supprimer_produit.html', {'produit': produit})

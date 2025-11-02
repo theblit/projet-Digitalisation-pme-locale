@@ -1,0 +1,24 @@
+{% extends 'shop/base.html' %}
+
+{% block content %}
+<h2>Mon Profil Vendeur</h2>
+
+<p>Bienvenue, {{ profil.user.username }} !</p>
+
+<h4>Informations du profil :</h4>
+<ul>
+    <li><strong>Nom de la boutique :</strong> {{ profil.nom_boutique }}</li>
+    <li><strong>Téléphone :</strong> {{ profil.telephone }}</li>
+</ul>
+
+<h4>Mes produits :</h4>
+<ul>
+    {% for produit in mes_produits %}
+        <li>{{ produit.title }} — {{ produit.price }} XOF</li>
+    {% empty %}
+        <li>Aucun produit ajouté pour le moment.</li>
+    {% endfor %}
+</ul>
+
+<a href="{% url 'ajouter_produit' %}" class="btn btn-success">+ Ajouter un produit</a>
+{% endblock %}

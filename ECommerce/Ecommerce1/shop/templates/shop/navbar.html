@@ -7,38 +7,86 @@
     
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav ms-auto">
-         <li class="nav-item ">
+        <li class="nav-item">
           <a class="nav-link active" href="{% url 'home' %}">Accueil</a>
         </li>
 
-        
-
-
-
         <li class="nav-item">
-          <a class="nav-link " href="#">Produits</a>
-        </li>
-
-        <li class="nav-item">
-          <a class="nav-link dropdown" href="#">Catégories</a>
-        </li>
-
-       <li class="nav-item">
-            <button id="panier" 
+          {% if user.is_authenticated %}
+            <a class="nav-link" href="{% url 'ajouter_produit' %}">Ajouter des Produits</a>
+          {% else %}
+            <button id="ajouter-produit-btn" 
                     type="button" 
-                    class="btn btn-secondary" 
+                    class="btn btn-link nav-link" 
                     data-bs-toggle="popover" 
                     data-bs-placement="bottom" 
-                    data-bs-trigger="focus">
-                Panier (<span id="cart-count">0</span>)
+                    data-bs-trigger="focus"
+                    data-bs-html="true"
+                    data-bs-content="<div class='text-center'><p class='mb-2'>Vous devez être connecté pour vendre un produit</p><a href='{% url 'connexion' %}?next={% url 'ajouter_produit' %}' class='btn btn-primary btn-sm'>Se connecter</a><br><a href='{% url 'inscription' %}' class='btn btn-outline-secondary btn-sm mt-2'>S'inscrire</a></div>">
+              Ajouter des Produits
             </button>
+          {% endif %}
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">Produits</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">Catégories</a>
+        </li>
+
+        <li class="nav-item">
+          <button id="panier" 
+                  type="button" 
+                  class="btn btn-secondary" 
+                  data-bs-toggle="popover" 
+                  data-bs-placement="bottom" 
+                  data-bs-trigger="focus">
+              Panier (<span id="cart-count">0</span>)
+          </button>
         </li>
         
+        {% if user.is_authenticated %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+            {{ user.username }}
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'mon_profil' %}">Mon profil</a></li>
+            <li><a class="dropdown-item" href="{% url 'ajouter_produit' %}">Vendre un produit</a></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'deconnexion' %}">Déconnexion</a></li>
+          </ul>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'connexion' %}">Connexion</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Connexion</a>
+          <a class="nav-link btn btn-success text-white px-3 rounded" href="{% url 'inscription' %}">Inscription</a>
         </li>
+        {% endif %}
       </ul>
     </div>
   </div>
 </nav>
+
+
+<style>
+  /* Style pour le bouton "Ajouter des Produits" */
+  #ajouter-produit-btn {
+    border: none;
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: rgba(255, 255, 255, 0.55) !important;
+  }
+  
+  #ajouter-produit-btn:hover {
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  
+  #ajouter-produit-btn:focus {
+    box-shadow: none;
+  }
+</style>
