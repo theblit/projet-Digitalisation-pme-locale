@@ -2,6 +2,12 @@ from django.contrib import admin
 from .models import Category, Product, Commande
 
 # Register your models here.
+admin.site.site_header = "Ecommerce Administration"
+admin.site.site_title = "Ecommerce Admin Portal"
+admin.site.index_title = "Welcome CEO"
+
+
+
 class AdminCategory(admin.ModelAdmin):
     list_display = ('name','date_added')
     search_fields = ('name',)
