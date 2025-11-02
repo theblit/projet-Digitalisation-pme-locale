@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Product, Commande
+from .models import Category, Product, Commande, CodePromo
 
 # Register your models here.
 admin.site.site_header = "Ecommerce Administration"
@@ -25,6 +25,13 @@ class AdminCommande(admin.ModelAdmin):
     readonly_fields = ('date_commande',)
 
 
+class AdminCodePromo(admin.ModelAdmin):
+    list_display = ('code', 'reduction_pourcentage', 'reduction_montant', 'actif', 'utilisations_actuelles', 'utilisations_max')
+    search_fields = ('code',)
+    list_filter = ('actif',)
+
+
 admin.site.register(Category, AdminCategory)
 admin.site.register(Product, AdminProduct)
 admin.site.register(Commande, AdminCommande)
+admin.site.register(CodePromo, AdminCodePromo)

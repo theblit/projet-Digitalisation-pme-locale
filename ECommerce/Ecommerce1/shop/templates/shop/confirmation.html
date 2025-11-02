@@ -1,12 +1,60 @@
-{% extends "shop/base.html"%}
+{% extends "shop/base.html" %}
 
 {% block content %}
-   <div class="alert alert-success" role="alert" class="text-align-center">
-  <h4 class="alert-heading">Merci M/Mme {{nom}}</h4>
-  <p>Vous serez livré(e) dans un delai max de deux jours!!!.</p>
-  <hr>
-  <p class="mb-0">Besoin d'une autre commande?? cliquez sur Shop.</p>
-</div>
 
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card shadow">
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        {% if commande.statut == 'paye' %}
+                        <i class="fas fa-check-circle text-success" style="font-size: 4rem;"></i>
+                        {% else %}
+                        <i class="fas fa-clock text-warning" style="font-size: 4rem;"></i>
+                        {% endif %}
+                    </div>
+                    
+                    {% if commande.statut == 'paye' %}
+                    <h1 class="text-success mb-3">Paiement confirmé !</h1>
+                    {% else %}
+                    <h1 class="text-warning mb-3">Commande enregistrée !</h1>
+                    {% endif %}
+                    
+                    <p class="lead">Merci <strong>{{ commande.nom }}</strong> pour votre commande.</p>
+                    
+                    <hr class="my-4">
+                    
+                    <div class="text-left">
+                        <h5>Détails de la commande :</h5>
+                        <ul class="list-unstyled">
+                            <li><strong>Numéro de commande :</strong> #{{ commande.id }}</li>
+                            <li><strong>Statut :</strong> 
+                                <span class="badge badge-{% if commande.statut == 'paye' %}success{% else %}warning{% endif %}">
+                                    {{ commande.get_statut_display }}
+                                </span>
+                            </li>
+                            <li><strong>Méthode de paiement :</strong> {{ commande.get_methode_paiement_display }}</li>
+                            <li><strong>Total payé :</strong> {{ commande.total|floatformat:0 }} XOF</li>
+                            <li><strong>Email :</strong> {{ commande.email }}</li>
+                            <li><strong>Adresse de livraison :</strong> {{ commande.adress }}, {{ commande.ville }}, {{ commande.pays }}</li>
+                            <li><strong>Date :</strong> {{ commande.date_commande|date:"d/m/Y à H:i" }}</li>
+                        </ul>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    {% if commande.statut == 'paye' %}
+                    <p class="text-muted">Un email de confirmation a été envoyé à <strong>{{ commande.email }}</strong></p>
+                    {% else %}
+                    <p class="text-muted">Vous paierez <strong>{{ commande.total|floatformat:0 }} XOF</strong> à la livraison</p>
+                    {% endif %}
+                    
+                    <a href="{% url 'home' %}" class="btn btn-primary btn-lg mt-3">Retour à l'accueil</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 {% endblock %}

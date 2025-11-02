@@ -1,0 +1,141 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Colonne gauche : Récapitulatif -->
+        <div class="col-md-7">
+            <h2>Récapitulatif de votre commande</h2>
+            
+            <div class="card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Commande #{{ commande.id }}</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Articles :</h6>
+                    <ul class="list-group mb-3">
+                        {% for item_id, item_data in panier.items %}
+                        <li class="list-group-item d-flex justify-content-between">
+                            <span>{{ item_data.1 }} x {{ item_data.0 }}</span>
+                            <strong>{{ item_data.2|floatformat:0 }} XOF</strong>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <span>Sous-total :</span>
+                        <strong>{{ commande.sous_total|floatformat:0 }} XOF</strong>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <span>Frais de livraison :</span>
+                        <strong>{{ commande.frais_livraison|floatformat:0 }} XOF</strong>
+                    </div>
+                    
+                    {% if commande.reduction > 0 %}
+                    <div class="d-flex justify-content-between text-success">
+                        <span>Réduction :</span>
+                        <strong>- {{ commande.reduction|floatformat:0 }} XOF</strong>
+                    </div>
+                    {% endif %}
+                    
+                    <hr>
+                    
+                    <div class="d-flex justify-content-between">
+                        <h5>Total à payer :</h5>
+                        <h5 class="text-success">{{ commande.total|floatformat:0 }} XOF</h5>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Adresse de livraison</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>{{ commande.nom }}</strong></p>
+                    <p class="mb-1">{{ commande.adress }}</p>
+                    <p class="mb-1">{{ commande.ville }}, {{ commande.pays }}</p>
+                    <p class="mb-1">{{ commande.telephone }}</p>
+                    <p class="mb-0">{{ commande.email }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Colonne droite : Paiement -->
+        <div class="col-md-5">
+            <h2>Paiement</h2>
+            
+            <!-- Code promo -->
+            {% if not commande.code_promo %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h6>Code promo</h6>
+                    <form method="POST">
+                        {% csrf_token %}
+                        <div class="input-group">
+                            <input type="text" name="code_promo" class="form-control" placeholder="Entrez votre code">
+                            <button type="submit" class="btn btn-outline-success">Appliquer</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                Code promo <strong>{{ commande.code_promo }}</strong> appliqué !
+            </div>
+            {% endif %}
+            
+            <!-- Méthodes de paiement -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Choisissez votre mode de paiement</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {% csrf_token %}
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="methode_paiement" id="mobile_money" value="mobile_money" checked>
+                            <label class="form-check-label" for="mobile_money">
+                                <strong>Mobile Money</strong>
+                                <p class="text-muted small mb-0">Orange Money, MTN Money, Moov Money</p>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="methode_paiement" id="carte" value="carte">
+                            <label class="form-check-label" for="carte">
+                                <strong>Carte bancaire</strong>
+                                <p class="text-muted small mb-0">Visa, Mastercard</p>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="methode_paiement" id="paypal" value="paypal">
+                            <label class="form-check-label" for="paypal">
+                                <strong>PayPal</strong>
+                            </label>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="methode_paiement" id="especes" value="especes">
+                            <label class="form-check-label" for="especes">
+                                <strong>Espèces à la livraison</strong>
+                            </label>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success btn-lg btn-block mt-3">
+                            Payer {{ commande.total|floatformat:0 }} XOF
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
