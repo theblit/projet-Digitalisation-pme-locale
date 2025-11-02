@@ -47,8 +47,24 @@ def checkout(request):
             zipcode=zipcode
         )
         com.save()
-        
+
+       # Message de succès
         messages.success(request, 'Commande passée avec succès!')
-        return redirect('home')
+        
+        # Redirection vers la page de confirmation
+        return redirect('confirmation')
     
     return render(request, 'shop/checkout.html')
+    
+        
+    
+    return render(request, 'shop/checkout.html')
+
+# Nouvelle vue pour la confirmation de commande
+def confirmation(request):
+    info = Commande.objects.all()[:1]
+    for item in info:
+        nom = item.nom
+
+
+    return render(request, 'shop/confirmation.html', {'nom': nom})
