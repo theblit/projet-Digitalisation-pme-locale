@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quincaillerie - Système de Gestion</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation Latérale -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div>
+                <h1>Quincaillerie</h1>
+                <p class="subtitle">AV 16, Rue 38 - Treichville</p>
+            </div>
+        </div>
+        
+        <div class="sidebar-menu">
+            <button class="menu-item active" data-module="dashboard">
+                Tableau de Bord
+            </button>
+            <button class="menu-item" data-module="stocks">
+                Gestion des Stocks
+            </button>
+            <button class="menu-item" data-module="sales">
+                Ventes
+            </button>
+            <button class="menu-item" data-module="purchases">
+                Achats
+            </button>
+            <button class="menu-item" data-module="customers">
+                Clients
+            </button>
+            <button class="menu-item" data-module="reports">
+                Rapports & Analyses
+            </button>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <p class="user-name">Gérant</p>
+                <p class="user-role">Administrateur</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu Principal -->
+    <main class="main-content">
+        <!-- MODULE: Tableau de Bord -->
+        <div id="dashboard" class="module active">
+            <div class="module-header">
+                <h2>Tableau de Bord</h2>
+                <p class="subtitle">Vue d'ensemble de votre quincaillerie</p>
+            </div>
+
+            <!-- Statistiques principales -->
+            <div class="stats-grid">
+                <div class="stat-card bg-green">
+                    <p class="stat-label">Ventes du Mois</p>
+                    <p class="stat-value">2 450 000 FCFA</p>
+                    <p class="stat-change positive">+12%</p>
+                </div>
+                <div class="stat-card bg-blue">
+                    <p class="stat-label">Produits en Stock</p>
+                    <p class="stat-value">1 245</p>
+                    <p class="stat-change negative">-3%</p>
+                </div>
+                <div class="stat-card bg-orange">
+                    <p class="stat-label">Alertes Réapprovisionnement</p>
+                    <p class="stat-value">18</p>
+                </div>
+                <div class="stat-card bg-purple">
+                    <p class="stat-label">Clients Actifs</p>
+                    <p class="stat-value">89</p>
+                    <p class="stat-change positive">+5%</p>
+                </div>
+            </div>
+
+            <!-- Évolution des ventes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Évolution des Ventes (5 derniers mois)</h3>
+                </div>
+                <div class="card-content">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mois</th>
+                                <th>Ventes (FCFA)</th>
+                                <th>Variation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            
+                            <tr>
+                                <td>Octobre 2024</td>
+                                <td>2 180 000</td>
+                                <td class="positive">+6.3%</td>
+                            </tr>
+                            <tr>
+                                <td>Novembre 2024</td>
+                                <td>2 450 000</td>
+                                <td class="positive">+12.4%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Deux colonnes -->
+            <div class="two-columns">
+                <!-- Produits les plus vendus -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Produits les Plus Vendus</h3>
+                    </div>
+                    <div class="card-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Quantité</th>
+                                    <th>CA (FCFA)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Ciment Portland 50kg</td>
+                                    <td>485</td>
+                                    <td>2 425 000</td>
+                                </tr>
+                                <tr>
+                                    <td>Fer à béton 12mm</td>
+                                    <td>320</td>
+                                    <td>1 920 000</td>
+                                </tr>
+                               
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Alertes de stock -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Alertes de Réapprovisionnement</h3>
+                    </div>
+                    <div class="card-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Stock Actuel</th>
+                                    <th>Seuil</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Sable fin (sac 50kg)</td>
+                                    <td>8</td>
+                                    <td>30</td>
+                                </tr>
+                                <tr>
+                                    <td>Clous 3" (boîte)</td>
+                                    <td>4</td>
+                                    <td>20</td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE: Gestion des Stocks -->
+        <div id="stocks" class="module">
+            <div class="module-header">
+                <div>
+                    <h2>Gestion des Stocks</h2>
+                    <p class="subtitle">Inventaire complet de vos produits</p>
+                </div>
+                <button class="btn btn-primary" >
+                    Ajouter un Produit
+                </button>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div class="search-card">
+                <input type="text" id="stockSearch" class="search-input" placeholder="Rechercher un produit par nom ou catégorie...">
+            </div>
+
+            <!-- Statistiques rapides -->
+            <div class="stats-grid stats-grid-3">
+                <div class="stat-card bg-blue">
+                    <p class="stat-label">Total Produits</p>
+                    <p class="stat-value" id="totalProducts">24</p>
+                </div>
+                <div class="stat-card bg-orange">
+                    <p class="stat-label">Stocks Faibles</p>
+                    <p class="stat-value" id="lowStockCount">5</p>
+                </div>
+                <div class="stat-card bg-green">
+                    <p class="stat-label">Stocks OK</p>
+                    <p class="stat-value" id="okStockCount">19</p>
+                </div>
+            </div>
+
+            <!-- Liste des produits -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Liste des Produits</h3>
+                </div>
+                <div class="card-content">
+                    <table class="data-table" id="productsTable">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Produit</th>
+                                <th>Catégorie</th>
+                                <th>Stock</th>
+                                <th>Seuil</th>
+                                <th>Prix Unitaire</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody id="productsTableBody">
+                            <!-- Généré dynamiquement -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE: Ventes -->
+        <div id="sales" class="module">
+            <div class="module-header">
+                <div>
+                    <h2>Gestion des Ventes</h2>
+                    <p class="subtitle">Factures et devis</p>
+                </div>
+                <div class="header-buttons">
+                    <button class="btn btn-outline" onclick="openModal('addQuoteModal')">
+                        Créer un Devis
+                    </button>
+                    <button class="btn btn-primary" onclick="openModal('addInvoiceModal')">
+                        Nouvelle Facture
+                    </button>
+                </div>
+            </div>
+
+            <!-- Historique des ventes -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Historique des Ventes</h3>
+                </div>
+                <div class="card-content">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>N° Facture</th>
+                                <th>Date</th>
+                                <th>Client</th>
+                                <th>Montant (FCFA)</th>
+                                <th>Mode Paiement</th>
+                                <th>Statut</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>FACT-2024-0089</td>
+                                <td>04/11/2024</td>
+                                <td>Kouassi Jean</td>
+                                <td>45 000</td>
+                                <td>Espèces</td>
+                                <td><span class="badge badge-success">Payée</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline">Voir</button>
+                                    <button class="btn btn-sm btn-outline">Imprimer</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>FACT-2024-0088</td>
+                                <td>03/11/2024</td>
+                                <td>BTP Construction SARL</td>
+                                <td>1 250 000</td>
+                                <td>Crédit 30j</td>
+                                <td><span class="badge badge-warning">En attente</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline">Voir</button>
+                                    <button class="btn btn-sm btn-outline">Imprimer</button>
+                                </td>
+                            </tr>                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE: Achats -->
+        <div id="purchases" class="module">
+            <div class="module-header">
+                <div>
+                    <h2>Gestion des Achats</h2>
+                    <p class="subtitle">Commandes fournisseurs</p>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('addPurchaseModal')">
+                    Nouvelle Commande
+                </button>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="stats-grid stats-grid-4">
+                <div class="stat-card bg-blue">
+                    <p class="stat-label">Commandes en Cours</p>
+                    <p class="stat-value">2</p>
+                </div>
+                <div class="stat-card bg-green">
+                    <p class="stat-label">Livrées ce Mois</p>
+                    <p class="stat-value">12</p>
+                </div>
+                <div class="stat-card bg-purple">
+                    <p class="stat-label">Total Achats du Mois</p>
+                    <p class="stat-value">1 920 000 FCFA</p>
+                </div>
+                <div class="stat-card bg-orange">
+                    <p class="stat-label">Fournisseurs Actifs</p>
+                    <p class="stat-value">8</p>
+                </div>
+            </div>
+
+            <!-- Commandes en cours -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Bons de Commande</h3>
+                </div>
+                <div class="card-content">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>N° Bon</th>
+                                <th>Date</th>
+                                <th>Fournisseur</th>
+                                <th>Montant (FCFA)</th>
+                                <th>Livraison Prévue</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>BC-2024-0034</td>
+                                <td>02/11/2024</td>
+                                <td>CIMAF Côte d'Ivoire</td>
+                                <td>850 000</td>
+                                <td>06/11/2024</td>
+                                <td><span class="badge badge-info">En cours</span></td>
+                            </tr>
+                            <tr>
+                                <td>BC-2024-0033</td>
+                                <td>01/11/2024</td>
+                                <td>Quincaillerie Centrale</td>
+                                <td>320 000</td>
+                                <td>04/11/2024</td>
+                                <td><span class="badge badge-success">Livrée</span></td>
+                            </tr>                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Liste des fournisseurs -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Fournisseurs</h3>
+                </div>
+                <div class="card-content">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Fournisseur</th>
+                                <th>Contact</th>
+                                <th>Spécialité</th>
+                                <th>Total Commandes (Mois)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CIMAF Côte d'Ivoire</td>
+                                <td>+225 27 22 45 67 89</td>
+                                <td>Ciment & Matériaux</td>
+                                <td>1 520 000 FCFA</td>
+                            </tr>
+                            <tr>
+                                <td>Quincaillerie Centrale</td>
+                                <td>+225 07 08 45 32 11</td>
+                                <td>Quincaillerie Générale</td>
+                                <td>820 000 FCFA</td>
+                            </tr>                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE: Clients -->
+        <div id="customers" class="module">
+            <div class="module-header">
+                <div>
+                    <h2>Gestion des Clients</h2>
+                    <p class="subtitle">Base de données clients</p>
+                </div>
+                <button class="btn btn-primary" onclick="openModal('addCustomerModal')">
+                    Nouveau Client
+                </button>
+            </div>
+
+            <!-- Barre de recherche -->
+            <div class="search-card">
+                <input type="text" id="customerSearch" class="search-input" placeholder="Rechercher un client par nom ou type...">
+            </div>
+
+            <!-- Statistiques -->
+            <div class="stats-grid stats-grid-4">
+                <div class="stat-card bg-blue">
+                    <p class="stat-label">Total Clients</p>
+                    <p class="stat-value">89</p>
+                </div>
+                <div class="stat-card bg-purple">
+                    <p class="stat-label">Clients Pro</p>
+                    <p class="stat-value">23</p>
+                </div>
+                <div class="stat-card bg-green">
+                    <p class="stat-label">Particuliers</p>
+                    <p class="stat-value">66</p>
+                </div>
+                <div class="stat-card bg-orange">
+                    <p class="stat-label">Crédits en Cours</p>
+                    <p class="stat-value">1 250 000 FCFA</p>
+                    <p class="stat-info">1 client</p>
+                </div>
+            </div>
+
+            <!-- Top clients -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Top Clients du Mois</h3>
+                </div>
+                <div class="card-content">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Client</th>
+                                <th>Type</th>
+                                <th>Total Achats (FCFA)</th>
+                                <th>Nombre de Factures</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>BTP Construction SARL</td>
+                                <td><span class="badge badge-primary">Pro</span></td>
+                                <td>2 850 000</td>
+                                <td>8</td>
+                            </tr>
+                            <tr>
+                                <td>Entreprise Bâtiment Moderne</td>
+                                <td><span class="badge badge-primary">Pro</span></td>
+                                <td>1 920 000</td>
+                                <td>5</td>
+                            </tr>                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Liste complète -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Tous les Clients</h3>
+                </div>
+                <div class="card-content">
+                    <table class="data-table" id="customersTable">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Type</th>
+                                <th>Téléphone</th>
+                                <th>Total Achats (FCFA)</th>
+                                <th>Crédit en Cours</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>BTP Construction SARL</td>
+                                <td><span class="badge badge-primary">Pro</span></td>
+                                <td>+225 27 22 45 67 89</td>
+                                <td>2 850 000</td>
+                                <td>1 250 000</td>
+                            </tr>
+                            <tr>
+                                <td>Entreprise Bâtiment Moderne</td>
+                                <td><span class="badge badge-primary">Pro</span></td>
+                                <td>+225 07 08 45 32 11</td>
+                                <td>1 920 000</td>
+                                <td>0</td>
+                            </tr>
+                            <tr>
+                                <td>Kouassi Jean</td>
+                                <td><span class="badge badge-outline">Particulier</span></td>
+                                <td>+225 05 44 33 22 11</td>
+                                <td>485 000</td>
+                                <td>0</td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODULE: Rapports & Analyses -->
+        <div id="reports" class="module">
+            <div class="module-header">
+                <div>
+                    <h2>Rapports & Analyses</h2>
+                    <p class="subtitle">Analyses de performance</p>
+                </div>
+                <select class="select-input">
+                    <option>Novembre 2024</option>
+                    <option>Octobre 2024</option>
+                    <option>Septembre 2024</option>
+                    <option>Dernier trimestre</option>
+                </select>
+            </div>
+
+            <!-- KPIs principaux -->
+            <div class="stats-grid stats-grid-4">
+                <div class="stat-card bg-green">
+                    <p class="stat-label">Chiffre d'Affaires</p>
+                    <p class="stat-value">2 450 000 FCFA</p>
+                    <p class="stat-change positive">+12% vs mois dernier</p>
+                </div>
+                <div class="stat-card bg-blue">
+                    <p class="stat-label">Marge Brute</p>
+                    <p class="stat-value">700 000 FCFA</p>
+                    <p class="stat-change positive">28.5% de marge</p>
+                </div>
+                <div class="stat-card bg-purple">
+                    <p class="stat-label">Transactions</p>
+                    <p class="stat-value">187 ventes</p>
+                    <p class="stat-change positive">+8% vs mois dernier</p>
+                </div>
+                <div class="stat-card bg-orange">
+                    <p class="stat-label">Panier Moyen</p>
+                    <p class="stat-value">13 102 FCFA</p>
+                    <p class="stat-change positive">+4%</p>
+                </div>
+            </div>
+
+            <!-- Évolution Ventes vs Achats -->
+            <div class="card">
+                <div class="card-header">
+                    <h3>Évolution Ventes vs Achats (2 derniers mois)</h3>
+                </div>
+                <div class="card-content">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mois</th>
+                                <th>Ventes (FCFA)</th>
+                                <th>Achats (FCFA)</th>
+                                <th>Marge (FCFA)</th>
+                                <th>% Marge</th>
+                            </tr>
+                        </thead>
+                        <tbody>                           
+                            <tr>
+                                <td>Septembre 2024</td>
+                                <td>2 050 000</td>
+                                <td>1 480 000</td>
+                                <td>570 000</td>
+                                <td>27.8%</td>
+                            </tr>
+                            <tr>
+                                <td>Octobre 2024</td>
+                                <td>2 180 000</td>
+                                <td>1 560 000</td>
+                                <td>620 000</td>
+                                <td>28.4%</td>
+                            </tr>                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Deux colonnes -->
+            <div class="two-columns">
+                <!-- Répartition par catégorie -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Ventes par Catégorie</h3>
+                    </div>
+                    <div class="card-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Catégorie</th>
+                                    <th>CA (FCFA)</th>
+                                    <th>Part</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Matériaux</td>
+                                    <td>1 200 000</td>
+                                    <td>49%</td>
+                                </tr>
+                                <tr>
+                                    <td>Outillage</td>
+                                    <td>450 000</td>
+                                    <td>18%</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Top 5 produits -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3>Top 5 Produits Vendus</h3>
+                    </div>
+                    <div class="card-content">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Produit</th>
+                                    <th>Quantité</th>
+                                    <th>CA (FCFA)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Ciment Portland 50kg</td>
+                                    <td>485</td>
+                                    <td>2 425 000</td>
+                                </tr>
+                                <tr>
+                                    <td>Fer à béton 12mm</td>
+                                    <td>320</td>
+                                    <td>1 920 000</td>
+                                </tr>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analyses et recommandations -->
+            <div class="card insight-card">
+                <div class="card-header">
+                    <h3>Analyses & Recommandations</h3>
+                </div>
+                <div class="card-content">
+                    <ul class="insight-list">
+                        <li>
+                            <strong>Performance Exceptionnelle :</strong> Vos ventes ont progressé de 12% ce mois-ci, dépassant la moyenne du secteur (8%).
+                        </li>
+                        <li>
+                            <strong>Marge Stable :</strong> La marge brute se maintient à 28.5%, ce qui est excellent pour une quincaillerie. Continuez à bien gérer vos achats.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODALES -->
+    
+    <!-- Modale Ajouter Produit -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajouter un Nouveau Produit</h3>
+                <button class="modal-close" onclick="closeModal('addProductModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm" onsubmit="handleAddProduct(event)">
+                    <div class="form-group">
+                        <label>Code Produit</label>
+                        <input type="text" name="code" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom du Produit</label>
+                        <input type="text" name="name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Catégorie</label>
+                        <select name="category" class="form-input" required>
+                            <option value="">Sélectionner...</option>
+                            <option value="Matériaux">Matériaux</option>
+                            <option value="Outillage">Outillage</option>
+                            <option value="Plomberie">Plomberie</option>
+                            <option value="Électricité">Électricité</option>
+                            <option value="Peinture">Peinture</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Stock Initial</label>
+                            <input type="number" name="stock" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Seuil de Réappro</label>
+                            <input type="number" name="threshold" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Prix Unitaire (FCFA)</label>
+                        <input type="number" name="price" class="form-input" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addProductModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter le Produit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Créer Facture -->
+    <div id="addInvoiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nouvelle Facture</h3>
+                <button class="modal-close" onclick="closeModal('addInvoiceModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>Client</label>
+                        <select class="form-input" required>
+                            <option value="">Sélectionner un client...</option>
+                            <option>Kouassi Jean</option>
+                            <option>BTP Construction SARL</option>
+                            <option>Traoré Ibrahim</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Mode de Paiement</label>
+                        <select class="form-input" required>
+                            <option value="">Sélectionner...</option>
+                            <option>Espèces</option>
+                            <option>Mobile Money</option>
+                            <option>Crédit 30 jours</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Montant Total (FCFA)</label>
+                        <input type="number" class="form-input" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addInvoiceModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer la Facture</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Créer Devis -->
+    <div id="addQuoteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Créer un Devis</h3>
+                <button class="modal-close" onclick="closeModal('addQuoteModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>Client</label>
+                        <select class="form-input" required>
+                            <option value="">Sélectionner un client...</option>
+                            <option>Kouassi Jean</option>
+                            <option>BTP Construction SARL</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Montant (FCFA)</label>
+                        <input type="number" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Validité (jours)</label>
+                        <input type="number" class="form-input" value="30" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addQuoteModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer le Devis</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Nouvelle Commande -->
+    <div id="addPurchaseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nouvelle Commande Fournisseur</h3>
+                <button class="modal-close" onclick="closeModal('addPurchaseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>Fournisseur</label>
+                        <select class="form-input" required>
+                            <option value="">Sélectionner...</option>
+                            <option>CIMAF Côte d'Ivoire</option>
+                            <option>Quincaillerie Centrale</option>
+                            <option>Plastico SA</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Montant (FCFA)</label>
+                        <input type="number" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Date de Livraison Prévue</label>
+                        <input type="date" class="form-input" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addPurchaseModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer la Commande</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Nouveau Client -->
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nouveau Client</h3>
+                <button class="modal-close" onclick="closeModal('addCustomerModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label>Nom du Client</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Type de Client</label>
+                        <select class="form-input" required>
+                            <option value="">Sélectionner...</option>
+                            <option>Particulier</option>
+                            <option>Professionnel</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="tel" class="form-input" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addCustomerModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter le Client</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
