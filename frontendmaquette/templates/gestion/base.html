@@ -1,0 +1,587 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Quincaillerie - Système de Gestion{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <!-- Navigation Latérale -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div>
+                <h1>Quincaillerie</h1>
+                <p class="subtitle">AV 16, Rue 38 - Treichville</p>
+            </div>
+        </div>
+        
+        <div class="sidebar-menu">
+            <a href="{% url 'gestion:dashboard' %}" class="menu-item {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" data-module="dashboard">
+                Tableau de Bord
+            </a>
+            <a href="{% url 'gestion:stocks' %}" class="menu-item {% if request.resolver_match.url_name == 'stocks' %}active{% endif %}" data-module="stocks">
+                Gestion des Stocks
+            </a>
+            <a href="{% url 'gestion:ventes' %}" class="menu-item {% if request.resolver_match.url_name == 'ventes' %}active{% endif %}" data-module="sales">
+                Ventes
+            </a>
+            <a href="{% url 'gestion:achats' %}" class="menu-item {% if request.resolver_match.url_name == 'achats' %}active{% endif %}" data-module="purchases">
+                Achats
+            </a>
+            <a href="{% url 'gestion:clients' %}" class="menu-item {% if request.resolver_match.url_name == 'clients' %}active{% endif %}" data-module="customers">
+                Clients
+            </a>
+            <a href="{% url 'gestion:rapports' %}" class="menu-item {% if request.resolver_match.url_name == 'rapports' %}active{% endif %}" data-module="reports">
+                Rapports & Analyses
+            </a>
+        </div>
+
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <p class="user-name">Gérant</p>
+                <p class="user-role">Administrateur</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu Principal -->
+    <main class="main-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- MODALES -->
+    <!-- Modale Ajouter Catégorie -->
+    <div id="addCategoryModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajouter une Nouvelle Catégorie</h3>
+                <button class="modal-close" onclick="closeModal('addCategoryModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addCategoryForm" onsubmit="handleAddCategory(event)">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Nom de la Catégorie</label>
+                        <input type="text" name="nom" class="form-input" required placeholder="Ex: Matériaux, Outillage...">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addCategoryModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter la Catégorie</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Ajouter Produit -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajouter un Nouveau Produit</h3>
+                <button class="modal-close" onclick="closeModal('addProductModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addProductForm" onsubmit="handleAddProduct(event)">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Code Produit</label>
+                        <input type="text" name="code" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Nom du Produit</label>
+                        <input type="text" name="nom" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Catégorie</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select name="categorie" class="form-input" id="categorieSelect" required style="flex: 1;">
+                                <option value="">Sélectionner une catégorie...</option>
+                            </select>
+                            <button type="button" class="btn btn-outline" style="padding: 0 15px;" onclick="openModal('addCategoryModal')" title="Ajouter une catégorie">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Stock Initial</label>
+                            <input type="number" name="stock" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Seuil de Réappro</label>
+                            <input type="number" name="seuil" class="form-input" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Prix Unitaire (FCFA)</label>
+                        <input type="number" step="0.01" name="prix_unitaire" class="form-input" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addProductModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter le Produit</button>
+                    </div>
+                </form>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Créer Facture -->
+    <div id="addInvoiceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nouvelle Facture</h3>
+                <button class="modal-close" onclick="closeModal('addInvoiceModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addInvoiceForm" onsubmit="handleAddInvoice(event)">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Client</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select name="client" id="clientSelect" class="form-input" required style="flex: 1;">
+                                <option value="">Sélectionner un client...</option>
+                            </select>
+                            <button type="button" class="btn btn-outline" style="padding: 0 15px;" onclick="openModal('addCustomerModal')" title="Ajouter un client">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Produits</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select id="productSelect" class="form-input" style="flex: 1;">
+                                <option value="">Sélectionner un produit...</option>
+                            </select>
+                            <input type="number" id="productQuantity" class="form-input" placeholder="Qté" min="1" value="1" style="width: 80px;">
+                            <button type="button" class="btn btn-primary" style="padding: 0 15px;" onclick="addProductToInvoice()">
+                                Ajouter
+                            </button>
+                        </div>
+                        <!-- Tableau des produits sélectionnés -->
+                        <div id="invoiceItemsContainer" style="margin-top: 15px; max-height: 300px; overflow-y: auto;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                <thead>
+                                    <tr style="background-color: #f5f5f5; border-bottom: 1px solid #ddd;">
+                                        <th style="padding: 8px; text-align: left;">Produit</th>
+                                        <th style="padding: 8px; text-align: right; width: 70px;">Qté</th>
+                                        <th style="padding: 8px; text-align: right; width: 90px;">P.U.</th>
+                                        <th style="padding: 8px; text-align: right; width: 90px;">Sous-total</th>
+                                        <th style="padding: 8px; text-align: center; width: 40px;">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="invoiceItemsList">
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="invoiceTotalContainer" style="margin-top: 10px; text-align: right; font-weight: bold; font-size: 16px;">
+                            Total: <span id="invoiceTotal">0.00</span> FCFA
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Mode de Paiement</label>
+                        <div style="display: flex; gap: 10px;">
+                            <select name="mode_paiement" id="modePaiementSelect" class="form-input" required style="flex: 1;">
+                                <option value="">Sélectionner...</option>
+                            </select>
+                            <button type="button" class="btn btn-outline" style="padding: 0 15px;" onclick="openModal('addPaymentMethodModal')" title="Ajouter un mode de paiement">
+                                +
+                            </button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Statut</label>
+                        <select name="statut" id="invoiceStatusSelect" class="form-input" required>
+                            <option value="">Sélectionner...</option>
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addInvoiceModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer la Facture</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Créer Devis -->
+    <div id="addQuoteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Créer un Devis</h3>
+                <button class="modal-close" onclick="closeModal('addQuoteModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addQuoteForm" onsubmit="handleAddQuote(event)">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Client</label>
+                        <select name="client" id="quoteClientSelect" class="form-input" required>
+                            <option value="">Sélectionner un client...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Produits/Services</label>
+                        <textarea name="description" class="form-input" rows="4" placeholder="Détailler les produits/services..." required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Montant Total (FCFA)</label>
+                        <input type="number" step="0.01" name="montant" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Validité du Devis (jours)</label>
+                        <input type="number" name="validite" class="form-input" value="30">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addQuoteModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer le Devis</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Nouvelle Commande -->
+    <div id="addPurchaseModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3>Nouvelle Commande Fournisseur</h3>
+                <button class="modal-close" onclick="closeModal('addPurchaseModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addPurchaseForm" onsubmit="handleAddPurchase(event)">
+                    {% csrf_token %}
+                    
+                    <!-- Informations Commande -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="card-header">
+                            <h4>Informations Commande</h4>
+                        </div>
+                        <div class="card-content">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                <div class="form-group">
+                                    <label>Fournisseur</label>
+                                    <div style="display: flex; gap: 10px;">
+                                        <select name="fournisseur" id="supplierSelect" class="form-input" required style="flex: 1;">
+                                            <option value="">Sélectionner...</option>
+                                        </select>
+                                        <button type="button" class="btn btn-outline" style="padding: 0 15px;" onclick="openModal('addSupplierModal')" title="Ajouter un fournisseur">+</button>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Date de Livraison Prévue</label>
+                                    <input type="date" name="livraison_prevue" id="purchaseLivraisonDate" class="form-input" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sélection Produits -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="card-header">
+                            <h4>Produits à Commander</h4>
+                        </div>
+                        <div class="card-content">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; margin-bottom: 15px;">
+                                <div>
+                                    <label style="font-size: 12px; color: #666;">Catégorie</label>
+                                    <select id="purchaseCategorySelect" class="form-input" onchange="loadPurchaseProducts()">
+                                        <option value="">Toutes les catégories</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: #666;">Produit</label>
+                                    <select id="purchaseProductSelect" class="form-input">
+                                        <option value="">Sélectionner un produit</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label style="font-size: 12px; color: #666;">Quantité</label>
+                                    <input type="number" id="purchaseQuantity" class="form-input" value="1" min="1">
+                                </div>
+                                <button type="button" class="btn btn-primary" onclick="addPurchaseItem()" style="align-self: flex-end; padding: 10px 20px;">Ajouter</button>
+                            </div>
+                            <div style="display: flex; gap: 5px; font-size: 12px;">
+                                <button type="button" class="btn btn-outline" style="padding: 5px 10px;" onclick="openModal('addCategoryModal')">+ Catégorie</button>
+                                <button type="button" class="btn btn-outline" style="padding: 5px 10px;" onclick="openModal('addProductModal')">+ Produit</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Articles Commandés -->
+                    <div class="card" style="margin-bottom: 20px;">
+                        <div class="card-header">
+                            <h4>Articles Commandés</h4>
+                        </div>
+                        <div class="card-content">
+                            <table class="data-table" style="font-size: 14px;">
+                                <thead>
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>Quantité</th>
+                                        <th>Prix Unit.</th>
+                                        <th>Sous-Total</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="purchaseItemsTable">
+                                </tbody>
+                            </table>
+                            <div style="text-align: center; padding: 20px; color: #999;" id="purchaseEmptyMessage">
+                                Aucun article ajouté
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total -->
+                    <div class="card" style="background-color: #f8f9fa; margin-bottom: 20px;">
+                        <div class="card-content">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <label style="font-weight: bold; font-size: 18px;">TOTAL COMMANDE</label>
+                                <p id="purchaseTotalAmount" style="font-weight: bold; font-size: 24px; color: #28a745; margin: 0;">0.00 FCFA</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addPurchaseModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Créer la Commande</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Nouveau Client -->
+    <div id="addCustomerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Nouveau Client</h3>
+                <button class="modal-close" onclick="closeModal('addCustomerModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addCustomerForm" onsubmit="handleAddClient(event)">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Nom du Client</label>
+                        <input type="text" name="nom" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Type de Client</label>
+                        <select name="type_client" id="customerTypeSelect" class="form-input" required>
+                            <option value="">Sélectionner...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Téléphone</label>
+                        <input type="tel" name="telephone" class="form-input" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addCustomerModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter le Client</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Ajouter Fournisseur -->
+    <div id="addSupplierModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajouter un Fournisseur</h3>
+                <button class="modal-close" onclick="closeModal('addSupplierModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addSupplierForm" onsubmit="handleAddSupplier(event)">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Nom du Fournisseur</label>
+                        <input type="text" name="nom" class="form-input" required placeholder="Ex: CIMAF Côte d'Ivoire...">
+                    </div>
+                    <div class="form-group">
+                        <label>Contact (Téléphone)</label>
+                        <input type="tel" name="contact" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Spécialité</label>
+                        <input type="text" name="specialite" class="form-input" required placeholder="Ex: Quincaillerie, Électricité...">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addSupplierModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter le Fournisseur</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Ajouter Mode de Paiement -->
+    <div id="addPaymentMethodModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Ajouter un Mode de Paiement</h3>
+                <button class="modal-close" onclick="closeModal('addPaymentMethodModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addPaymentMethodForm" onsubmit="handleAddPaymentMethod(event)">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label>Nom du Mode de Paiement</label>
+                        <input type="text" name="nom" class="form-input" required placeholder="Ex: Virement Bancaire, Espèces...">
+                    </div>
+                    <div class="form-group">
+                        <label>Description (optionnel)</label>
+                        <textarea name="description" class="form-input" rows="3" placeholder="Ex: Paiement par virement bancaire..."></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="closeModal('addPaymentMethodModal')">Annuler</button>
+                        <button type="submit" class="btn btn-primary">Ajouter le Mode</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Détails Facture -->
+    <div id="factureDetailsModal" class="modal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3>Détails de la Facture</h3>
+                <button class="modal-close" onclick="closeModal('factureDetailsModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Infos facture -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">
+                        <h4>Informations Facture</h4>
+                    </div>
+                    <div class="card-content">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <label style="font-weight: bold; color: #6c757d;">N° Facture</label>
+                                <p id="factureNum" style="font-size: 16px; margin: 5px 0;">--</p>
+                            </div>
+                            <div>
+                                <label style="font-weight: bold; color: #6c757d;">Date</label>
+                                <p id="factureDate" style="font-size: 16px; margin: 5px 0;">--</p>
+                            </div>
+                            <div>
+                                <label style="font-weight: bold; color: #6c757d;">Client</label>
+                                <p id="factureClient" style="font-size: 16px; margin: 5px 0;">--</p>
+                            </div>
+                            <div>
+                                <label style="font-weight: bold; color: #6c757d;">Type Client</label>
+                                <p id="factureClientType" style="font-size: 16px; margin: 5px 0;">--</p>
+                            </div>
+                            <div>
+                                <label style="font-weight: bold; color: #6c757d;">Téléphone</label>
+                                <p id="factureClientPhone" style="font-size: 16px; margin: 5px 0;">--</p>
+                            </div>
+                            <div>
+                                <label style="font-weight: bold; color: #6c757d;">Mode Paiement</label>
+                                <p id="facturePaymentMode" style="font-size: 16px; margin: 5px 0;">--</p>
+                            </div>
+                            <div>
+                                <label style="font-weight: bold; color: #6c757d;">Statut</label>
+                                <p id="factureStatus" style="font-size: 16px; margin: 5px 0;">--</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Articles -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <div class="card-header">
+                        <h4>Articles Facturés</h4>
+                    </div>
+                    <div class="card-content">
+                        <table class="data-table" style="font-size: 14px;">
+                            <thead>
+                                <tr>
+                                    <th>Code Produit</th>
+                                    <th>Produit</th>
+                                    <th>Quantité</th>
+                                    <th>Prix Unitaire</th>
+                                    <th>Sous-Total</th>
+                                </tr>
+                            </thead>
+                            <tbody id="factureItemsList">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Total -->
+                <div class="card" style="background-color: #f8f9fa;">
+                    <div class="card-content">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <label style="font-weight: bold; font-size: 18px;">TOTAL FACTURE</label>
+                            <p id="factureTotal" style="font-weight: bold; font-size: 24px; color: #28a745; margin: 0;">0.00 FCFA</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="printFacture()">Imprimer</button>
+                    <button type="button" class="btn btn-outline" onclick="closeModal('factureDetailsModal')">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        // Charger les catégories depuis l'API
+        function loadCategories() {
+            const select = document.getElementById('categorieSelect');
+            if (!select) return;
+            
+            fetch('/api/categories/')
+                .then(response => response.json())
+                .then(data => {
+                    // Garder la première option "Sélectionner..."
+                    const currentValue = select.value;
+                    const firstOption = select.querySelector('option');
+                    
+                    // Supprimer toutes les options sauf la première
+                    while (select.options.length > 1) {
+                        select.remove(1);
+                    }
+                    
+                    // Ajouter les catégories
+                    data.forEach(categorie => {
+                        const option = document.createElement('option');
+                        option.value = categorie.id;
+                        option.textContent = categorie.nom;
+                        select.appendChild(option);
+                    });
+                    
+                    // Restaurer la valeur si elle existe encore
+                    if (currentValue && select.querySelector(`option[value="${currentValue}"]`)) {
+                        select.value = currentValue;
+                    }
+                })
+                .catch(error => console.error('Erreur lors du chargement des catégories:', error));
+        }
+
+        // Charger les catégories au démarrage et quand la modale s'ouvre
+        document.addEventListener('DOMContentLoaded', loadCategories);
+        
+        // Recharger aussi quand on ouvre la modale d'ajout de produit
+        const addProductModal = document.getElementById('addProductModal');
+        if (addProductModal) {
+            const observer = new MutationObserver(() => {
+                if (addProductModal.classList.contains('active')) {
+                    loadCategories();
+                }
+            });
+            observer.observe(addProductModal, { attributes: true, attributeFilter: ['class'] });
+        }
+    </script>
+</body>
+</html>

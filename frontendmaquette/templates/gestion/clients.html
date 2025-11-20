@@ -1,0 +1,108 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Gestion des Clients - Quincaillerie{% endblock %}
+
+{% block content %}
+<div class="module-header">
+    <div>
+        <h2>Gestion des Clients</h2>
+        <p class="subtitle">Base de données clients</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('addCustomerModal')">
+        Nouveau Client
+    </button>
+</div>
+
+<!-- Barre de recherche -->
+<div class="search-card">
+    <input type="text" id="customerSearch" class="search-input" placeholder="Rechercher un client par nom ou type...">
+</div>
+
+<!-- Statistiques -->
+<div class="stats-grid stats-grid-4">
+    <div class="stat-card bg-blue">
+        <p class="stat-label">Total Clients</p>
+        <p class="stat-value">{{ total_clients|default:"0" }}</p>
+    </div>
+    <div class="stat-card bg-purple">
+        <p class="stat-label">Clients Pro</p>
+        <p class="stat-value">{{ clients_pro|default:"0" }}</p>
+    </div>
+    <div class="stat-card bg-green">
+        <p class="stat-label">Particuliers</p>
+        <p class="stat-value">{{ clients_particuliers|default:"0" }}</p>
+    </div>
+    <div class="stat-card bg-orange">
+        <p class="stat-label">Crédits en Cours</p>
+        <p class="stat-value">{{ total_credits|default:"0" }} FCFA</p>
+    </div>
+</div>
+
+<!-- Top clients -->
+<div class="card">
+    <div class="card-header">
+        <h3>Top Clients du Mois</h3>
+    </div>
+    <div class="card-content">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Client</th>
+                    <th>Type</th>
+                    <th>Total Achats (FCFA)</th>
+                    <th>Nombre de Factures</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for client in top_clients %}
+                <tr>
+                    <td>{{ client.nom }}</td>
+                    <td><span class="badge badge-primary">{{ client.get_type_client_display }}</span></td>
+                    <td>{{ client.total_achats|floatformat:2 }} FCFA</td>
+                    <td>{{ client.facture_set.count }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">Aucun client</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Liste complète -->
+<div class="card">
+    <div class="card-header">
+        <h3>Tous les Clients</h3>
+    </div>
+    <div class="card-content">
+        <table class="data-table" id="customersTable">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Type</th>
+                    <th>Téléphone</th>
+                    <th>Total Achats (FCFA)</th>
+                    <th>Crédit en Cours</th>
+                </tr>
+            </thead>
+            <tbody id="clientsTableBody">
+                {% for client in clients %}
+                <tr>
+                    <td>{{ client.nom }}</td>
+                    <td><span class="badge badge-primary">{{ client.get_type_client_display }}</span></td>
+                    <td>{{ client.telephone|default:"--" }}</td>
+                    <td>{{ client.total_achats|floatformat:2|default:"0.00" }} FCFA</td>
+                    <td>{{ client.credit_en_cours|floatformat:2|default:"0.00" }} FCFA</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">Aucun client</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

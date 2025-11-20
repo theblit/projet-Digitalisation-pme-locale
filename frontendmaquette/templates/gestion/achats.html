@@ -1,0 +1,137 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Gestion des Achats - Quincaillerie{% endblock %}
+
+{% block content %}
+<div class="module-header">
+    <div>
+        <h2>Gestion des Achats</h2>
+        <p class="subtitle">Commandes fournisseurs</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('addPurchaseModal')">
+        Nouvelle Commande
+    </button>
+</div>
+
+<!-- Statistiques -->
+<div class="stats-grid stats-grid-4">
+    <div class="stat-card bg-blue">
+        <p class="stat-label">Commandes en Cours</p>
+        <p class="stat-value">{{ commandes_en_cours|default:"0" }}</p>
+    </div>
+    <div class="stat-card bg-green">
+        <p class="stat-label">Livrées ce Mois</p>
+        <p class="stat-value">{{ commandes_livrees|default:"0" }}</p>
+    </div>
+    <div class="stat-card bg-purple">
+        <p class="stat-label">Total Achats du Mois</p>
+        <p class="stat-value">{{ total_achats_mois|default:"0" }} FCFA</p>
+    </div>
+    <div class="stat-card bg-orange">
+        <p class="stat-label">Fournisseurs Actifs</p>
+        <p class="stat-value">{{ total_fournisseurs|default:"0" }}</p>
+    </div>
+</div>
+
+<!-- Commandes en cours -->
+<div class="card">
+    <div class="card-header">
+        <h3>Bons de Commande</h3>
+    </div>
+    <div class="card-content">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>N° Bon</th>
+                    <th>Date</th>
+                    <th>Fournisseur</th>
+                    <th>Montant (FCFA)</th>
+                    <th>Livraison Prévue</th>
+                    <th>Statut</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for commande in commandes %}
+                <tr>
+                    <td>{{ commande.numero }}</td>
+                    <td>{{ commande.date|date:"d/m/Y" }}</td>
+                    <td>{{ commande.fournisseur.nom }}</td>
+                    <td>{{ commande.montant }} FCFA</td>
+                    <td>--</td>
+                    <td><span class="badge badge-info">En cours</span></td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">Aucune commande</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Liste des fournisseurs -->
+<div class="card">
+    <div class="card-header">
+        <h3>Fournisseurs</h3>
+    </div>
+    <div class="card-content">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Fournisseur</th>
+                    <th>Contact</th>
+                    <th>Spécialité</th>
+                    <th>Total Commandes (Mois)</th>
+                </tr>
+            </thead>
+            <tbody id="fournisseursTableBody">
+                {% for fournisseur in fournisseurs %}
+                <tr data-fournisseur-id="{{ fournisseur.id }}">
+                    <td>{{ fournisseur.nom }}</td>
+                    <td>{{ fournisseur.contact }}</td>
+                    <td>{{ fournisseur.specialite }}</td>
+                    <td class="commandes-count" data-count="0">0 FCFA</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">Aucun fournisseur</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+// Charger les commandes au chargement
+function loadFournisseursCommandes() {
+    fetch('/api/fournisseurs/commandes/')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                data.fournisseurs.forEach(fournisseur => {
+                    const row = document.querySelector(`tr[data-fournisseur-id="${fournisseur.id}"]`);
+                    if (row) {
+                        const count = row.querySelector('.commandes-count');
+                        count.textContent = fournisseur.commandes_mois;
+                        count.setAttribute('data-count', fournisseur.commandes_mois);
+                    }
+                });
+            }
+        })
+        .catch(error => console.error('Erreur:', error));
+}
+
+// Charger au premier chargement de la page
+document.addEventListener('DOMContentLoaded', function() {
+    loadFournisseursCommandes();
+    
+    // Mettre à jour toutes les 3 secondes
+    setInterval(loadFournisseursCommandes, 3000);
+});
+</script>
+        </table>
+    </div>
+</div>
+{% endblock %}

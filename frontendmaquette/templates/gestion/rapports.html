@@ -1,0 +1,158 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Rapports & Analyses - Quincaillerie{% endblock %}
+
+{% block content %}
+<div class="module-header">
+    <div>
+        <h2>Rapports & Analyses</h2>
+        <p class="subtitle">Analyses de performance</p>
+    </div>
+    <select class="select-input">
+        <option>Novembre 2024</option>
+        <option>Octobre 2024</option>
+        <option>Septembre 2024</option>
+        <option>Dernier trimestre</option>
+    </select>
+</div>
+
+<!-- KPIs principaux -->
+<div class="stats-grid stats-grid-4">
+    <div class="stat-card bg-green">
+        <p class="stat-label">Chiffre d'Affaires</p>
+        <p class="stat-value">{{ ca|default:"0" }} FCFA</p>
+    </div>
+    <div class="stat-card bg-blue">
+        <p class="stat-label">Marge Brute</p>
+        <p class="stat-value">{{ marge_brute|default:"0" }} FCFA</p>
+    </div>
+    <div class="stat-card bg-purple">
+        <p class="stat-label">Transactions</p>
+        <p class="stat-value">{{ nb_transactions|default:"0" }} ventes</p>
+    </div>
+    <div class="stat-card bg-orange">
+        <p class="stat-label">Panier Moyen</p>
+        <p class="stat-value">{{ panier_moyen|default:"0" }} FCFA</p>
+    </div>
+</div>
+
+<!-- Évolution Ventes vs Achats -->
+<div class="card">
+    <div class="card-header">
+        <h3>Évolution Ventes vs Achats (2 derniers mois)</h3>
+    </div>
+    <div class="card-content">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Mois</th>
+                    <th>Ventes (FCFA)</th>
+                    <th>Achats (FCFA)</th>
+                    <th>Marge (FCFA)</th>
+                    <th>% Marge</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rapport in rapports_evolution %}
+                <tr>
+                    <td>{{ rapport.mois }}</td>
+                    <td>{{ rapport.ventes }} FCFA</td>
+                    <td>{{ rapport.achats }} FCFA</td>
+                    <td>{{ rapport.marge }} FCFA</td>
+                    <td>{{ rapport.pourcentage }}%</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" style="text-align: center;">Aucune donnée</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Deux colonnes -->
+<div class="two-columns">
+    <!-- Répartition par catégorie -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Ventes par Catégorie</h3>
+        </div>
+        <div class="card-content">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Catégorie</th>
+                        <th>CA (FCFA)</th>
+                        <th>Part</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for categorie in ventes_par_categorie %}
+                    <tr>
+                        <td>{{ categorie.nom }}</td>
+                        <td>{{ categorie.ca }} FCFA</td>
+                        <td>{{ categorie.pourcentage }}%</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Aucune donnée</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Top 5 produits -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Top 5 Produits Vendus</h3>
+        </div>
+        <div class="card-content">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Quantité</th>
+                        <th>CA (FCFA)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produit in top_produits_vendus %}
+                    <tr>
+                        <td>{{ produit.nom }}</td>
+                        <td>{{ produit.quantite }}</td>
+                        <td>{{ produit.ca }} FCFA</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" style="text-align: center;">Aucune donnée</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Analyses et recommandations -->
+<div class="card insight-card">
+    <div class="card-header">
+        <h3>Analyses & Recommandations</h3>
+    </div>
+    <div class="card-content">
+        {% if insights %}
+        <ul class="insight-list">
+            {% for insight in insights %}
+            <li>
+                <strong>{{ insight.titre }}</strong> {{ insight.description }}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p style="text-align: center; color: #7f8c8d;">Aucune analyse disponible pour le moment</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

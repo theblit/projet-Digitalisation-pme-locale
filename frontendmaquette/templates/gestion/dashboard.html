@@ -1,0 +1,126 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Tableau de Bord - Quincaillerie{% endblock %}
+
+{% block content %}
+<div class="module-header">
+    <div>
+        <h2>Tableau de Bord</h2>
+        <p class="subtitle">Vue d'ensemble de votre quincaillerie</p>
+    </div>
+</div>
+
+<!-- Statistiques principales -->
+<div class="stats-grid">
+    <div class="stat-card bg-green">
+        <p class="stat-label">Ventes du Mois</p>
+        <p class="stat-value">{{ total_ventes_mois|default:"0" }} FCFA</p>
+    </div>
+    <div class="stat-card bg-blue">
+        <p class="stat-label">Produits en Stock</p>
+        <p class="stat-value">{{ total_produits|default:"0" }}</p>
+    </div>
+    <div class="stat-card bg-orange">
+        <p class="stat-label">Alertes Réapprovisionnement</p>
+        <p class="stat-value">{{ produits_stock_faible|default:"0" }}</p>
+    </div>
+    <div class="stat-card bg-purple">
+        <p class="stat-label">Clients Actifs</p>
+        <p class="stat-value">{{ total_clients|default:"0" }}</p>
+    </div>
+</div>
+
+<!-- Évolution des ventes -->
+<div class="card">
+    <div class="card-header">
+        <h3>Évolution des Ventes (5 derniers mois)</h3>
+    </div>
+    <div class="card-content">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Mois</th>
+                    <th>Ventes (FCFA)</th>
+                    <th>Variation</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vente in ventes_evolution %}
+                <tr>
+                    <td>{{ vente.mois }}</td>
+                    <td>{{ vente.montant }} FCFA</td>
+                    <td class="positive">{{ vente.variation }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center;">Aucune donnée</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Deux colonnes -->
+<div class="two-columns">
+    <!-- Produits les plus vendus -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Produits les Plus Vendus</h3>
+        </div>
+        <div class="card-content">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Catégorie</th>
+                        <th>Nombre d'Achats</th>
+                        <th>Prix Unitaire</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for produit in top_produits %}
+                    <tr>
+                        <td><strong>{{ produit.nom }}</strong></td>
+                        <td>{{ produit.categorie.nom }}</td>
+                        <td>{{ produit.nombre_achats }}</td>
+                        <td>{{ produit.prix_unitaire }} FCFA</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center;">Aucun produit vendu</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Alertes de stock -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Alertes de Réapprovisionnement</h3>
+        </div>
+        <div class="card-content">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Stock Actuel</th>
+                        <th>Seuil</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for alerte in alertes_stock %}
+                    <tr>
+                        <td>{{ alerte.nom }}</td>
+                        <td>{{ alerte.stock }}</td>
+                        <td>{{ alerte.seuil }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'gestion/base.html' %}
+
+{% block title %}Gestion des Ventes - Quincaillerie{% endblock %}
+
+{% block content %}
+<div class="module-header">
+    <div>
+        <h2>Gestion des Ventes</h2>
+        <p class="subtitle">Factures et devis</p>
+    </div>
+    <div class="header-buttons">
+        <button class="btn btn-outline" onclick="openModal('addQuoteModal')">
+            Créer un Devis
+        </button>
+        <button class="btn btn-primary" onclick="openModal('addInvoiceModal')">
+            Nouvelle Facture
+        </button>
+    </div>
+</div>
+
+<!-- Historique des ventes -->
+<div class="card">
+    <div class="card-header">
+        <h3>Historique des Ventes</h3>
+    </div>
+    <div class="card-content">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>N° Facture</th>
+                    <th>Date</th>
+                    <th>Client</th>
+                    <th>Montant (FCFA)</th>
+                    <th>Mode Paiement</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for facture in factures %}
+                <tr>
+                    <td>{{ facture.numero }}</td>
+                    <td>{{ facture.date|date:"d/m/Y" }}</td>
+                    <td>{{ facture.client.nom }}</td>
+                    <td>{{ facture.montant }} FCFA</td>
+                    <td>{{ facture.mode_paiement|default:"--" }}</td>
+                    <td>
+                        {% if facture.statut == 'payee' %}
+                            <span class="badge badge-success">Payée</span>
+                        {% else %}
+                            <span class="badge" style="background-color: #e74c3c;">En attente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline" data-facture-id="{{ facture.id }}" onclick="viewFactureDetails(this.dataset.factureId)">Voir</button>
+                        <button class="btn btn-sm btn-outline">Imprimer</button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center;">Aucune facture</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
