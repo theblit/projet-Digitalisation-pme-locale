@@ -1,5 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from .models import Produit, Client, Fournisseur, Facture, BonCommande, Categorie, ModePaiement, LigneFacture, LigneCommande
 from django.db.models import Sum, Count, Q, F
 from django.utils import timezone
@@ -7,6 +11,7 @@ from django.http import JsonResponse
 import json
 
 
+@login_required(login_url='gestion:login')
 def dashboard(request):
     """Vue du tableau de bord"""
     # Statistiques
@@ -40,6 +45,7 @@ def dashboard(request):
     return render(request, 'gestion/dashboard.html', context)
 
 
+@login_required(login_url='gestion:login')
 def stocks(request):
     """Vue de gestion des stocks"""
     # Recherche
@@ -69,6 +75,7 @@ def stocks(request):
     return render(request, 'gestion/stocks.html', context)
 
 
+@login_required(login_url='gestion:login')
 def ventes(request):
     """Vue de gestion des ventes"""
     factures = Facture.objects.all().order_by('-date')
@@ -79,6 +86,7 @@ def ventes(request):
     return render(request, 'gestion/ventes.html', context)
 
 
+@login_required(login_url='gestion:login')
 def achats(request):
     """Vue de gestion des achats"""
     commandes = BonCommande.objects.all().order_by('-date')
@@ -101,6 +109,7 @@ def achats(request):
     return render(request, 'gestion/achats.html', context)
 
 
+@login_required(login_url='gestion:login')
 def clients(request):
     """Vue de gestion des clients"""
     # Recherche
@@ -135,6 +144,7 @@ def clients(request):
     return render(request, 'gestion/clients.html', context)
 
 
+@login_required(login_url='gestion:login')
 def rapports(request):
     """Vue des rapports et analyses"""
     # KPIs
@@ -578,5 +588,105 @@ def api_facture_lignes(request, facture_id):
         return JsonResponse({'success': False, 'error': 'Facture non trouvée'}, status=404)
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=500)
-    except Facture.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Facture non trouvée'}, status=404)
+
+
+# ==================== AUTHENTIFICATION ====================
+
+def login_view(request):
+    """Vue de connexion"""
+    if request.user.is_authenticated:
+        return redirect('gestion:dashboard')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            messages.success(request, f"Bienvenue {user.first_name or user.username} ! Vous êtes connecté.")
+            return redirect('gestion:dashboard')
+        else:
+            messages.error(request, "Nom d'utilisateur ou mot de passe incorrect.")
+    
+    return render(request, 'gestion/login.html')
+
+
+def register_view(request):
+    """Vue d'inscription"""
+    if request.user.is_authenticated:
+        return redirect('gestion:dashboard')
+    
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        email = request.POST.get('email')
+        first_name = request.POST.get('first_name')
+        password = request.POST.get('password')
+        password_confirm = request.POST.get('password_confirm')
+        
+        # Validation
+        errors = []
+        
+        if not username or len(username) < 3:
+            errors.append("Le nom d'utilisateur doit contenir au moins 3 caractères.")
+        
+        if User.objects.filter(username=username).exists():
+            errors.append("Ce nom d'utilisateur existe déjà.")
+        
+        if email and User.objects.filter(email=email).exists():
+            errors.append("Cet email est déjà utilisé.")
+        
+        if not password or len(password) < 6:
+            errors.append("Le mot de passe doit contenir au moins 6 caractères.")
+        
+        if password != password_confirm:
+            errors.append("Les mots de passe ne correspondent pas.")
+        
+        if errors:
+            for error in errors:
+                messages.error(request, error)
+        else:
+            # Créer l'utilisateur
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                first_name=first_name
+            )
+            
+            # Authentifier et connecter automatiquement
+            login(request, user)
+            messages.success(request, f"Compte créé avec succès ! Bienvenue {first_name or username}.")
+            return redirect('gestion:dashboard')
+    
+    return render(request, 'gestion/register.html')
+
+
+def logout_view(request):
+    """Vue de déconnexion"""
+    username = request.user.first_name or request.user.username
+    logout(request)
+    messages.success(request, f"Au revoir {username} ! Vous avez été déconnecté.")
+    return redirect('gestion:login')
+
+
+@login_required(login_url='gestion:login')
+def profile_view(request):
+    """Vue de profil utilisateur"""
+    if request.method == 'POST':
+        user = request.user
+        first_name = request.POST.get('first_name', user.first_name)
+        email = request.POST.get('email', user.email)
+        
+        user.first_name = first_name
+        user.email = email
+        user.save()
+        
+        messages.success(request, "Profil mis à jour avec succès.")
+        return redirect('gestion:profile')
+    
+    context = {
+        'user': request.user
+    }
+    return render(request, 'gestion/profile.html', context)

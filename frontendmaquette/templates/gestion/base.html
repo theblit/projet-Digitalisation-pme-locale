@@ -40,14 +40,29 @@
 
         <div class="sidebar-footer">
             <div class="user-info">
-                <p class="user-name">Gérant</p>
-                <p class="user-role">Administrateur</p>
+                <p class="user-name">👤 {{ request.user.first_name|default:request.user.username }}</p>
+                <p class="user-role">Utilisateur</p>
+                <div style="margin-top: 10px; display: flex; gap: 5px;">
+                    <a href="{% url 'gestion:profile' %}" class="btn btn-sm" style="flex: 1; text-align: center; text-decoration: none;">Mon Profil</a>
+                    <a href="{% url 'gestion:logout' %}" class="btn btn-sm btn-danger" style="flex: 1; text-align: center; text-decoration: none;">Déconnexion</a>
+                </div>
             </div>
         </div>
     </nav>
 
     <!-- Contenu Principal -->
     <main class="main-content">
+        {% if messages %}
+        <div class="alerts-container">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible">
+                    <span>{{ message }}</span>
+                    <button class="alert-close" onclick="this.parentElement.style.display='none';">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
         {% block content %}
         {% endblock %}
     </main>
